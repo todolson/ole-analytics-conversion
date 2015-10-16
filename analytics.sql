@@ -1,117 +1,15 @@
 drop table uc_analdummy
 go
-CREATE TABLE uc_analdummy ( 
-	ITEM_ID                      	int(11) NOT NULL DEFAULT '0',
-	HOLDINGS_ID                  	int(11) NOT NULL,
-	FAST_ADD                     	char(1) NULL,
-	STAFF_ONLY                   	char(1) NULL,
-	BARCODE                      	varchar(20) NULL,
-	URI                          	varchar(400) NULL,
-	ITEM_TYPE_ID                 	int(11) NULL,
-	TEMP_ITEM_TYPE_ID            	int(11) NULL,
-	ITEM_STATUS_ID               	int(11) NULL,
-	ITEM_STATUS_DATE_UPDATED     	datetime NULL,
-	LOCATION_ID                  	int(11) NULL,
-	LOCATION                     	varchar(600) NULL,
-	LOCATION_LEVEL               	varchar(600) NULL,
-	CALL_NUMBER_TYPE_ID          	int(11) NULL,
-	CALL_NUMBER_PREFIX           	varchar(40) NULL,
-	CALL_NUMBER                  	varchar(100) NULL,
-	SHELVING_ORDER               	varchar(300) NULL,
-	ENUMERATION                  	varchar(100) NULL,
-	CHRONOLOGY                   	varchar(100) NULL,
-	COPY_NUMBER                  	varchar(20) NULL,
-	NUM_PIECES                   	varchar(10) NULL,
-	PURCHASE_ORDER_LINE_ITEM_ID  	varchar(45) NULL,
-	VENDOR_LINE_ITEM_ID          	varchar(45) NULL,
-	FUND                         	varchar(100) NULL,
-	PRICE                        	decimal(10,0) NULL,
-	CLAIMS_RETURNED              	char(1) NULL,
-	CLAIMS_RETURNED_DATE_CREATED 	datetime NULL,
-	CLAIMS_RETURNED_NOTE         	varchar(400) NULL,
-	CURRENT_BORROWER             	varchar(30) NULL,
-	PROXY_BORROWER               	varchar(30) NULL,
-	DUE_DATE_TIME                	datetime NULL,
-	CHECK_IN_NOTE                	varchar(400) NULL,
-	ITEM_DAMAGED_STATUS          	char(1) NULL,
-	ITEM_DAMAGED_NOTE            	varchar(400) NULL,
-	MISSING_PIECES               	char(1) NULL,
-	MISSING_PIECES_EFFECTIVE_DATE	datetime NULL,
-	MISSING_PIECES_COUNT         	int(11) NULL,
-	MISSING_PIECES_NOTE          	varchar(400) NULL,
-	BARCODE_ARSL                 	varchar(200) NULL,
-	HIGH_DENSITY_STORAGE_ID      	int(11) NULL,
-	NUM_OF_RENEW                 	int(11) NULL,
-	CREATED_BY                   	varchar(40) NULL,
-	DATE_CREATED                 	datetime NULL,
-	UPDATED_BY                   	varchar(40) NULL,
-	DATE_UPDATED                 	datetime NULL,
-	UNIQUE_ID_PREFIX             	varchar(10) NULL,
-	CHECK_OUT_DATE_TIME          	timestamp NULL,
-	PRIMARY KEY(ITEM_ID)
-)
+drop table uc_analreal
+go
+
+CREATE TABLE uc_analdummy
+LIKE ole_ds_item_t
 GO
 
-create index uc_analdummy_idx
-on uc_analdummy(BARCODE)
+CREATE TABLE uc_analreal
+LIKE ole_ds_item_t
 GO
-
-CREATE TABLE uc_analreal ( 
-	ITEM_ID                      	int(11) NOT NULL DEFAULT '0',
-	HOLDINGS_ID                  	int(11) NOT NULL,
-	FAST_ADD                     	char(1) NULL,
-	STAFF_ONLY                   	char(1) NULL,
-	BARCODE                      	varchar(20) NULL,
-	URI                          	varchar(400) NULL,
-	ITEM_TYPE_ID                 	int(11) NULL,
-	TEMP_ITEM_TYPE_ID            	int(11) NULL,
-	ITEM_STATUS_ID               	int(11) NULL,
-	ITEM_STATUS_DATE_UPDATED     	datetime NULL,
-	LOCATION_ID                  	int(11) NULL,
-	LOCATION                     	varchar(600) NULL,
-	LOCATION_LEVEL               	varchar(600) NULL,
-	CALL_NUMBER_TYPE_ID          	int(11) NULL,
-	CALL_NUMBER_PREFIX           	varchar(40) NULL,
-	CALL_NUMBER                  	varchar(100) NULL,
-	SHELVING_ORDER               	varchar(300) NULL,
-	ENUMERATION                  	varchar(100) NULL,
-	CHRONOLOGY                   	varchar(100) NULL,
-	COPY_NUMBER                  	varchar(20) NULL,
-	NUM_PIECES                   	varchar(10) NULL,
-	PURCHASE_ORDER_LINE_ITEM_ID  	varchar(45) NULL,
-	VENDOR_LINE_ITEM_ID          	varchar(45) NULL,
-	FUND                         	varchar(100) NULL,
-	PRICE                        	decimal(10,0) NULL,
-	CLAIMS_RETURNED              	char(1) NULL,
-	CLAIMS_RETURNED_DATE_CREATED 	datetime NULL,
-	CLAIMS_RETURNED_NOTE         	varchar(400) NULL,
-	CURRENT_BORROWER             	varchar(30) NULL,
-	PROXY_BORROWER               	varchar(30) NULL,
-	DUE_DATE_TIME                	datetime NULL,
-	CHECK_IN_NOTE                	varchar(400) NULL,
-	ITEM_DAMAGED_STATUS          	char(1) NULL,
-	ITEM_DAMAGED_NOTE            	varchar(400) NULL,
-	MISSING_PIECES               	char(1) NULL,
-	MISSING_PIECES_EFFECTIVE_DATE	datetime NULL,
-	MISSING_PIECES_COUNT         	int(11) NULL,
-	MISSING_PIECES_NOTE          	varchar(400) NULL,
-	BARCODE_ARSL                 	varchar(200) NULL,
-	HIGH_DENSITY_STORAGE_ID      	int(11) NULL,
-	NUM_OF_RENEW                 	int(11) NULL,
-	CREATED_BY                   	varchar(40) NULL,
-	DATE_CREATED                 	datetime NULL,
-	UPDATED_BY                   	varchar(40) NULL,
-	DATE_UPDATED                 	datetime NULL,
-	UNIQUE_ID_PREFIX             	varchar(10) NULL,
-	CHECK_OUT_DATE_TIME          	timestamp NULL,
-	PRIMARY KEY(ITEM_ID)
-)
-GO
-
-create index uc_analreal_idx
-on uc_analreal(BARCODE)
-GO
-
 
 
 insert uc_analdummy
@@ -122,7 +20,7 @@ go
 insert uc_analreal
 select * from ole_ds_item_t
 where barcode in
-(SELECT substring(barcode,2,20) FROM uc_analdummy)
+(SELECT substring(barcode,2) FROM uc_analdummy)
 GO
 
 
@@ -131,8 +29,9 @@ create table uc_analitemupdates
 HOLDINGS_ID int(11) NOT NULL)
 GO
 insert uc_analitemupdates
-select a.item_id, b.holdings_id from uc_analreal a, uc_analdummy b
-where a.BARCODE = substring( b.BARCODE,2,20)
+select a.item_id, b.holdings_id 
+from uc_analreal a, uc_analdummy b
+where a.BARCODE = substring( b.BARCODE,2)
 GO
 CREATE TABLE uc_analitemholdings
   ( 
@@ -192,7 +91,7 @@ go
 insert uc_analdeletes
 select a.ITEM_ID
 FROM uc_analdummy a, uc_analreal b
-where substring(a.BARCODE,2,20)=b.barcode
+where substring(a.BARCODE,2)=b.barcode
 GO
 
 DELETE ole_ds_item_stat_search_t  FROM ole_ds_item_stat_search_t 
